@@ -37,11 +37,14 @@ protected:
 	//the socket descriptor return from sock()
 	int socketDescriptor;
 	//ip address
-	string ip_address;
+
 	int backLog;
 	//port number
 	int port_number;
 public:
+	string ip_address = IP;
+	bool on = true;
+
 	/***********************************************************************
 	* function name: Socket												   *
 	* The Input: none													   *
@@ -79,7 +82,7 @@ public:
 	* The Function operation: getting data from the other socket and print *
 	* the data															   *
 	***********************************************************************/
-	virtual int receiveData(char* buffer, int size) = 0;
+	 int receiveData(char* buffer, int size);
 
 
 

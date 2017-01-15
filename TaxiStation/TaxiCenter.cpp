@@ -9,7 +9,7 @@ TaxiCenter::TaxiCenter(vector<Driver*>* d,vector<Cab*>* c) {}
 TaxiCenter::TaxiCenter(){
     this->drivers = new vector<Driver*>;
     this->cabs = new vector<Cab*>;
-    this->clients = new vector<Udp*>;
+    this->clients = new vector<Socket*>;
     this->numOfCabs = 0;
     this->numOfDrivers = 0;
     this->trips = new vector<Trip*>;
@@ -27,11 +27,11 @@ void TaxiCenter::addCab(Cab* cb) {
     this->numOfCabs += 1;
 }
 
-void TaxiCenter::addClient(Udp* udp) {
+void TaxiCenter::addClient(Socket* udp) {
     (*this->clients).push_back(udp);
 }
 
-vector <Udp*>* TaxiCenter::getClients() {
+vector <Socket*>* TaxiCenter::getClients() {
     return this->clients;
 }
 
@@ -120,7 +120,7 @@ Driver* TaxiCenter::getDriverById (int drId) {
     }
 }
 
-Udp* TaxiCenter::getClientById (int clId) {
+Socket* TaxiCenter::getClientById (int clId) {
     for (int i =0; i< (*this->drivers).size(); i ++) {
         if((*this->drivers).at(i)->getId() == clId) {
             return (*this->clients).at(i);
@@ -158,3 +158,4 @@ Driver *TaxiCenter::whoIsClose(Trip *tr) {
     this->NotActiveDrivers->erase(this->NotActiveDrivers->begin()+a);
     return tt;
 }
+

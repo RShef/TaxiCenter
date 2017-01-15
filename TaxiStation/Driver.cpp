@@ -81,9 +81,7 @@ int Driver::getId() {
     return this->id;
 }
 
-int Driver::getCabId() {
-    return this->cabId;
-}
+
 
 void Driver::addCab(Cab *cab) {
     this->cabInfo = cab;

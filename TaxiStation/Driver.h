@@ -93,7 +93,7 @@ public:
 
     void setRoute();
 
-    int getCabId();
+    int getCabId() { return this->cabId;}
 
 private:
     // The driver id.

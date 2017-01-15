@@ -8,7 +8,7 @@
 #include "Cab.h"
 #include "Trip.h"
 #include "Driver.h"
-#include "../Socketing/Udp.h"
+#include "../Socketing/Socket.h"
 #include <vector>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -31,7 +31,7 @@ private:
     // The trips assigned to the taxi center.
     vector<Trip*>* trips;
     // clients (drivers) connected to this center.
-    vector<Udp*>* clients;
+    vector<Socket*>* clients;
 
 public:
     /**
@@ -59,9 +59,9 @@ public:
     */
     void addCab(Cab * cb);
 
-    void addClient(Udp* udp);
+    void addClient(Socket* udp);
 
-    vector <Udp*>* getClients();
+    vector <Socket*>* getClients();
 
     // Currently not used, will be in the future.
     void answerCall();
@@ -130,7 +130,7 @@ public:
     */
     Driver* getDriverById (int driverId);
 
-    Udp* getClientById (int clId);
+    Socket* getClientById (int clId);
 
         /**
          * Returns the drivers avaliable to the taxi center.
@@ -161,6 +161,8 @@ public:
      * @return number of cabs.
      */
     int getNumOfCabs();
+
+    void addCabToDriver();
 
 };
 
