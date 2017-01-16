@@ -52,6 +52,7 @@ class Server : public Socket {
       bool online;
       char buffer[800000];
       Server* th;
+      int driverIdC;
     };
 
     vector<char[]> *buff;
@@ -125,6 +126,14 @@ class Server : public Socket {
     int receiveData(char* buffer, int size, int clientDescriptor, void* d);
 
     Server(){};
+
+    ClientData* findClientById(int id){
+        for (int i = 0; i < this->clientDis.size(); i++) {
+            if ( id == clientDis.at(i)->driverIdC){
+                return clientDis.at(i);
+            }
+        }
+    };
 
 };
 

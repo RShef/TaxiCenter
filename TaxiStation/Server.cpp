@@ -69,7 +69,6 @@ void* Server::threadFunction(void* elm) {
     ClientData * d = (ClientData*) elm;
     memset(d->buffer, 0, sizeof(d->buffer));
     d->th->receiveData(d->buffer, sizeof(d->buffer), d->client, d);
-    //lock
 
 
 }
@@ -92,6 +91,9 @@ void Server::one(int p) {
 
     }
     // receive driver from client
+    while (clientDis.size()<input1){
+
+    }
     int i;
    for(i = 0; i<input1; i++) {
        stringstream ds;
@@ -102,20 +104,21 @@ void Server::one(int p) {
        tc->addDriver(d);
        d->addCab(tc->getCabById(d->getCabId()));
        tc->getDriverById(d->getId())->addMap(m);
+       clientDis.at(i)->driverIdC = d->getId();
 
        //send cabs to drivers
        stringstream cs;
        boost::archive::text_oarchive coa(cs);
        coa << cabs.at(i);
        buffer2 = cs.str();
-       tc->getClients()->at(1)->sendData(buffer2, 0);
+       this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
 
        //send map to clients
        stringstream ms;
        boost::archive::text_oarchive oa(ms);
        oa << m;
        buffer2 = ms.str();
-       tc->getClients()->at(i)->sendData(buffer2, 0);
+       this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
        d->addMap(m);
    }
 }
@@ -183,14 +186,15 @@ void Server::nine() {
                 temp->getCab()->addTrip(trips.at(i));
                 temp->setRoute();
                 //prepare client to receive trip
-                tc->getClientById(temp->getId())->sendData("trip",0);
+                ClientData * cl = this->findClientById(temp->getId());
+                this->findClientById(temp->getId())->th->sendData("trip",cl->client);
                 //send trip to client
                 stringstream ts;
                 boost::archive::text_oarchive toa(ts);
                 Trip *tt = trips.at(i);
                 toa << tt;
                 buffer2 = ts.str();
-                tc->getClientById(temp->getId())->sendData(buffer2,0);
+                this->findClientById(temp->getId())->th->sendData(buffer2,cl->client);
                 // set trip as assigned
                 trips.at(i)->assign();
             }
@@ -245,10 +249,11 @@ int Server::receiveData(char* buffer, int size, int clientDescriptor, void* d) {
         }
     }
     if (d != NULL) {
-        pthread_mutex_lock(&list_locker);
         ClientData *ddd = (ClientData *) d;
+        pthread_mutex_lock(&list_locker);
         this->clientDis.push_back(ddd);
         pthread_mutex_unlock(&list_locker);
+        pthread_exit(NULL);
     }
     //return correct if there were no problem
     return (int)read_bytes;
@@ -277,6 +282,7 @@ void Server::acceptOneClient(ClientData* data){
     }
 
 }
+
 
 
 
