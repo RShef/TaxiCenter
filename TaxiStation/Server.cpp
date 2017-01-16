@@ -73,7 +73,7 @@ void* Server::threadFunction(void* elm) {
 
 }
 
-void Server::one(int p) {
+void Server::one() {
     cin >> input1;
     Driver *d;
     void* st;
@@ -106,6 +106,7 @@ void Server::one(int p) {
        tc->getDriverById(d->getId())->addMap(m);
        clientDis.at(i)->driverIdC = d->getId();
 
+       /**
        //send cabs to drivers
        stringstream cs;
        boost::archive::text_oarchive coa(cs);
@@ -120,6 +121,7 @@ void Server::one(int p) {
        buffer2 = ms.str();
        this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
        d->addMap(m);
+        **/
    }
 }
 void Server::two() {
@@ -186,15 +188,15 @@ void Server::nine() {
                 temp->getCab()->addTrip(trips.at(i));
                 temp->setRoute();
                 //prepare client to receive trip
-                ClientData * cl = this->findClientById(temp->getId());
-                this->findClientById(temp->getId())->th->sendData("trip",cl->client);
+                //ClientData * cl = this->findClientById(temp->getId());
+                //this->findClientById(temp->getId())->th->sendData("trip",cl->client);
                 //send trip to client
                 stringstream ts;
                 boost::archive::text_oarchive toa(ts);
                 Trip *tt = trips.at(i);
                 toa << tt;
                 buffer2 = ts.str();
-                this->findClientById(temp->getId())->th->sendData(buffer2,cl->client);
+                //this->findClientById(temp->getId())->th->sendData(buffer2,cl->client);
                 // set trip as assigned
                 trips.at(i)->assign();
             }

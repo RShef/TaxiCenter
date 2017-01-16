@@ -109,7 +109,7 @@ class Server : public Socket {
 
 
     void PreWork();
-    void one(int numOfDrivers);
+    void one();
     void two();
     void three();
     void four();

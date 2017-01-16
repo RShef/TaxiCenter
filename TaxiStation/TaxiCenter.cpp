@@ -47,7 +47,8 @@ void TaxiCenter::sendTaxi(int time) {
             if (temp->getCab()->getTrip()->getStartTime() <= time) {
                 // move driver one step
                 temp->moveOneStep();
-                this->clients->at(i)->sendData("go",0);
+                //this->clients->at(i)->sendData("go",0);
+
                 // Return the driver and cab to the available drivers list for future trips if trip is done
                 if (temp->getCab()->getTrip()->isDone()) {
                     (*this->NotActiveDrivers).push_back(temp);

@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 
             case 1: //receive drivers from clients
             {
-                server->one(atoi(argv[1]));
+                server->one();
                 break;
 
             }
