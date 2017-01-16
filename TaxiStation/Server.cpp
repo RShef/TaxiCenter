@@ -4,7 +4,55 @@
 
 #include "Server.h"
 
-Server::Server(int x, int y, int ob) {
+
+Server::Server(int po) {
+    this->port_number = po;
+    this->isServer = true;
+    pthread_mutex_init(&this->connection_locker, 0);
+    pthread_mutex_init(&this->list_locker, 0);
+    //getting a socket descriptor and check if legal
+    this->socketDescriptor = socket(AF_INET, SOCK_STREAM, 0); // (IPv4 , TCP, flags) --> Socket Descriptor
+    if (this->socketDescriptor < 0) {
+        //return an error represent error at this method
+        perror("ERROR_SOCKET - in initialize()\n");
+    }
+    //if server
+    if (this->isServer) {
+        //initialize the struct
+        struct sockaddr_in sin;                     // ipv4 socket address structure
+        memset(&sin, 0, sizeof(sin));
+        sin.sin_family = AF_INET;                   // IPv4 version
+        sin.sin_addr.s_addr = INADDR_ANY;           // binds to all ip address of the host
+        sin.sin_port = htons(this->port_number);    // pass Server Post number
+        //bind
+        if (::bind(this->socketDescriptor,(struct sockaddr *) &sin, sizeof(sin)) < 0) {
+            //return an error represent error at this method
+            perror("ERROR_BIND - in initialize()\n");
+        }
+        //listen
+        if (listen(this->socketDescriptor, this->backLog) < 0) {
+            //return an error represent error at this method
+            perror("ERROR_LISTEN - in initialize()\n");
+        }
+        // start to accept first client (get 0 if failed)
+
+        //if client
+    } else {
+        struct sockaddr_in sin;                                          // ipv4 socket address structure
+        memset(&sin, 0, sizeof(sin));
+        sin.sin_family = AF_INET;                                        // IPv4 version
+        sin.sin_addr.s_addr = inet_addr((this->ip_address).c_str());     // get IP address from DEFINE IP number
+        sin.sin_port = htons(this->port_number);                         // pass port number
+        if (connect(this->socketDescriptor,
+                    (struct sockaddr *) &sin, sizeof(sin)) < 0) {
+            //return an error represent error at this method
+            perror("ERROR_CONNECT - in initialize()\n");
+        }
+    }
+}
+
+
+void Server::setMap(int x, int y, int ob){
     this->m = new Grid(x, y);
     this->tc = new TaxiCenter();
     this->buff1 = new vector<char *>;
@@ -16,61 +64,60 @@ Server::Server(int x, int y, int ob) {
         }
     }
 }
+
 void* Server::threadFunction(void* elm) {
-    Tcp::ClientData * d = (Tcp::ClientData*) elm;
+    ClientData * d = (ClientData*) elm;
     memset(d->buffer, 0, sizeof(d->buffer));
-    d->tcp->receiveData(d->buffer, sizeof(d->buffer), d->client);
+    d->th->receiveData(d->buffer, sizeof(d->buffer), d->client, d);
     //lock
-    ((Server*)(d->th))->buff1->push_back(d->buffer);
+
 
 }
+
 void Server::one(int p) {
-    Tcp *tcp = new Tcp(1,p);
     cin >> input1;
     Driver *d;
+    void* st;
     //initialize clients UDPs
-    tcp->initialize();
 
     for (int i = 0; i< input1; i++) {
         pthread_t thread;
-        Tcp::ClientData *data = new Tcp::ClientData;
-        tcp->acceptOneClient(data);
+        ClientData* data = new ClientData();
 
-        pthread_mutex_lock(&list_locker1);
-        clientDis.push_back(data);
-        pthread_mutex_unlock(&list_locker1);
+        this->acceptOneClient(data);
 
         memset(data->buffer, 0, sizeof(buffer));
         data->th = this;
-        pthread_create(&thread, NULL, threadFunction, (void *) data);
-        cout << data->buffer << endl;
+        pthread_create(&thread, NULL,threadFunction, (void*) data);
+
     }
     // receive driver from client
-    stringstream ds;
-    //ds << data->buffer;
-    boost::archive::text_iarchive ia(ds);
-    ia >> d;
-    drivers.push_back(d);
-    tc->addDriver(d);
-    d->addCab(tc->getCabById(d->getCabId()));
-    tc->getDriverById(d->getId())->addMap(m);
+    int i;
+   for(i = 0; i<input1; i++) {
+       stringstream ds;
+       ds << clientDis.at(i)->buffer;
+       boost::archive::text_iarchive ia(ds);
+       ia >> d;
+       drivers.push_back(d);
+       tc->addDriver(d);
+       d->addCab(tc->getCabById(d->getCabId()));
+       tc->getDriverById(d->getId())->addMap(m);
 
-    cout<<tc->getNumOfDrivers();
-// UNtil here this needs to work.
-    //send cabs to drivers
-    stringstream cs;
-    boost::archive::text_oarchive coa(cs);
-    coa << cabs.at(1);
-    buffer2 = cs.str();
-    tc->getClients()->at(1)->sendData(buffer2);
+       //send cabs to drivers
+       stringstream cs;
+       boost::archive::text_oarchive coa(cs);
+       coa << cabs.at(i);
+       buffer2 = cs.str();
+       tc->getClients()->at(1)->sendData(buffer2, 0);
 
-    //send map to clients
-    stringstream ms;
-    boost::archive::text_oarchive oa(ms);
-    oa << m;
-    buffer2 = ms.str();
-    tc->getClients()->at(1)->sendData(buffer2);
-    d->addMap(m);
+       //send map to clients
+       stringstream ms;
+       boost::archive::text_oarchive oa(ms);
+       oa << m;
+       buffer2 = ms.str();
+       tc->getClients()->at(i)->sendData(buffer2, 0);
+       d->addMap(m);
+   }
 }
 void Server::two() {
     cin >> input1 >> comma[0] >> input2 >> comma[1] >> input3 >> comma[2] >> input4
@@ -120,7 +167,7 @@ void Server::seven() {
     trips.clear();
     obstacles.clear();
     for (int i = 0; i < clients.size(); ++i) {
-        clients.at(i)->sendData("quit");
+        clients.at(i)->sendData("quit",0);
         //clients.at(i)->~Udp();
     }
     clients.clear();
@@ -136,14 +183,14 @@ void Server::nine() {
                 temp->getCab()->addTrip(trips.at(i));
                 temp->setRoute();
                 //prepare client to receive trip
-                tc->getClientById(temp->getId())->sendData("trip");
+                tc->getClientById(temp->getId())->sendData("trip",0);
                 //send trip to client
                 stringstream ts;
                 boost::archive::text_oarchive toa(ts);
                 Trip *tt = trips.at(i);
                 toa << tt;
                 buffer2 = ts.str();
-                tc->getClientById(temp->getId())->sendData(buffer2);
+                tc->getClientById(temp->getId())->sendData(buffer2,0);
                 // set trip as assigned
                 trips.at(i)->assign();
             }
@@ -157,3 +204,81 @@ void Server::PreWork() {
     // construct obstacles
 
 }
+int Server::sendData(string data, int clientDescriptor) {
+    size_t data_len = data.length();
+    const char * datas = data.c_str();
+    ssize_t sent_bytes = send(this->isServer ? clientDescriptor : this->socketDescriptor, datas, data_len, 0);
+    if (sent_bytes < 0) {
+        string host = "";
+        if (isServer) {
+            host = "Server\n";
+        } else {
+            host = "Client\n";
+        }
+        host = "ERROR_SEND - in sendData() on " + host;
+        //return an error represent error at this method
+        perror(host.c_str());
+    }
+    //return correct if there were no problem
+    return (int)sent_bytes;
+}
+
+int Server::receiveData(char* buffer, int size, int clientDescriptor, void* d) {
+    ssize_t read_bytes = recv(this->isServer ? clientDescriptor : this->socketDescriptor, buffer, size, 0);
+    //checking the errors
+    if (read_bytes <= 0) {
+        string host = "";
+        if (isServer) {
+            host = "Server\n";
+        } else {
+            host = "Client\n";
+        }
+        if (read_bytes == 0) {
+            host = "CONNECTION_CLOSED - in receiveData() on " + host;
+            perror(host.c_str());
+            exit(1);
+        } else {
+            host = "ERROR_RECEIVE - in receiveData() on " + host;
+            //return an error represent error at this method
+            perror(host.c_str());
+            exit(1);
+        }
+    }
+    if (d != NULL) {
+        pthread_mutex_lock(&list_locker);
+        ClientData *ddd = (ClientData *) d;
+        this->clientDis.push_back(ddd);
+        pthread_mutex_unlock(&list_locker);
+    }
+    //return correct if there were no problem
+    return (int)read_bytes;
+}
+
+
+
+void Server::acceptOneClient(ClientData* data){
+    int clientDescriptor = 0;
+    int client_sin;
+    unsigned int addr_len = sizeof(client_sin);
+    while (clientDescriptor <= 0) {
+        clientDescriptor = accept(this->socketDescriptor,
+                                  (struct sockaddr *) &client_sin, &addr_len);
+    }
+    data->client = clientDescriptor;
+    data->client_socket = client_sin;
+    data->client_size = addr_len;
+    data->online = true;
+    data->th = this;
+
+    if (clientDescriptor < 0) {
+        //return an error represent error at this method
+        perror("ERROR_CONNECT - in acceptOneClient()\n");
+        exit(1);
+    }
+
+}
+
+
+
+
+

@@ -17,7 +17,7 @@
 ************************************************************/
 
 #include "Tcp.h"
-
+class Server;
 /***********************************************************************
 * function name: Tcp												   *
 * The Input: Boolean, true - if server, false if client	and port number*
@@ -177,7 +177,7 @@ int Tcp::sendData(string data, int clientDescriptor) {
 * The Function operation: getting data from the other socket to,	   *
 * enter it to the buffer and print the data							   *
 ***********************************************************************/
-int Tcp::receiveData(char* buffer, int size, int clientDescriptor) {
+int Tcp::receiveData(char* buffer, int size, int clientDescriptor, void* d) {
     ssize_t read_bytes = recv(this->isServer ? clientDescriptor : this->socketDescriptor, buffer, size, 0);
     //checking the errors
     if (read_bytes <= 0) {
@@ -198,8 +198,21 @@ int Tcp::receiveData(char* buffer, int size, int clientDescriptor) {
             exit(1);
         }
     }
+    if (d != NULL) {
+        pthread_mutex_lock(&list_locker);
+        ClientData *ddd = (ClientData *) d;
+
+        pthread_mutex_unlock(&list_locker);
+    }
     //return correct if there were no problem
     return (int)read_bytes;
 }
 
+void* Tcp::threadRecive(void* data) {
+    ClientData * d = (ClientData*) data;
+    memset(d->buffer, 0, sizeof(d->buffer));
+    d->tcp->receiveData(d->buffer, sizeof(d->buffer), d->client,NULL);
+
+    return  NULL;
+}
 

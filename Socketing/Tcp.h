@@ -24,7 +24,7 @@ class Tcp: public Socket {
       unsigned int client_size;
       bool online;
       Tcp * tcp;
-      char buffer[8000];
+      char buffer[800000];
       void* th;
     };
     vector<char[]> *buff;
@@ -72,7 +72,7 @@ class Tcp: public Socket {
     ***********************************************************************/
     int reciveData(char* buffer, int size) { return  0;};
 
-    int receiveData(char *buffer, int size, int clientDescriptor);
+    int receiveData(char *buffer, int size, int clientDescriptor, void* d);
     int sendData(string data, int clientDescriptor);
     void acceptOneClient(ClientData* d);
     static void* threadRecive(void* data);

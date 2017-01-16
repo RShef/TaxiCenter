@@ -4,27 +4,21 @@
 
 #include <iostream>
 
-#include "GridPoint.h"
-#include "Server.cpp"
+#include "Server.h"
 using namespace std;
 
 
 
 
 
-
-
 int main(int argc, char *argv[]) {
-
-
-
     // input variables
     int gridX, gridY, numOfObstacles;
     int task;
+    Server* server = new Server(atoi(argv[1]));
     // construct the grid (our WORLD).
     cin >> gridX >> gridY >> numOfObstacles;
-    Server *server = new Server(gridX,gridY,numOfObstacles);
-
+    server->setMap(gridX,gridY,numOfObstacles);
     // run tasks loop
     cin >> task;
     while (task != 0) {
@@ -35,7 +29,6 @@ int main(int argc, char *argv[]) {
             {
                 server->one(atoi(argv[1]));
                 break;
-
 
             }
 

@@ -5,7 +5,6 @@
 #ifndef PART_2_SERVER_H
 #define PART_2_SERVER_H
 #include <iostream>
-#include "../Socketing/Tcp.cpp"
 
 #include "GridPoint.h"
 #include "TaxiCenter.h"
@@ -14,6 +13,7 @@
 #include "LuxuryCab.h"
 #include "Clock.h"
 #include <boost/serialization/export.hpp>
+#include "../Socketing/Socket.h"
 
 #include <tcl.h>
 
@@ -22,7 +22,7 @@ using namespace std;
 //BOOST_CLASS_EXPORT_GUID(StandardCab, "StandardCab");
 //BOOST_CLASS_EXPORT_GUID(LuxuryCab, "LuxuryCab");
 
-class Server {
+class Server : public Socket {
  public:
     /**
  * Find the type of car by Char given.
@@ -41,12 +41,30 @@ class Server {
         }
     }
 
+ public:
+    Server(int po);
+
+    struct ClientData
+    {
+      int client_socket;
+      int client;
+      unsigned int client_size;
+      bool online;
+      char buffer[800000];
+      Server* th;
+    };
+
+    vector<char[]> *buff;
+
+    pthread_mutex_t connection_locker;
+    pthread_mutex_t list_locker;
 
 /**
  * Find the type of color of the car by Char given.
  * @param carInput - Char input.
  * @return - the int value that the char represents.
  */
+
     int findColor(char colorInput) {
         if (colorInput == 'R') {
             return 0;
@@ -84,12 +102,12 @@ class Server {
     vector <GridPoint*> obstacles;
     TaxiCenter *tc;
     Clock *clock = new Clock();
-    vector<Tcp::ClientData*> clientDis;
+    vector<ClientData*> clientDis;
     Grid * m;
     vector<char*> *buff1;
 
+
     void PreWork();
-    Server(int x, int y, int ob);
     void one(int numOfDrivers);
     void two();
     void three();
@@ -97,6 +115,16 @@ class Server {
     void seven();
     void nine();
     static void* threadFunction(void* elm);
+    //void setSocket(int po);
+    void setMap(int x, int y, int ob);
+    //int sendData(string data);
+    int initialize(){};
+    int sendData(string data,int clientDescriptor);
+
+    void acceptOneClient(ClientData* data);
+    int receiveData(char* buffer, int size, int clientDescriptor, void* d);
+
+    Server(){};
 
 };
 

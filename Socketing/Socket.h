@@ -30,17 +30,18 @@ using namespace std;
 #define IP "127.0.0.1"
 
 
+
 class Socket {
-protected:
+ public:
 	//true is the socket is for a server, false if for a client
-	bool isServer;
+	bool isServer = true;
 	//the socket descriptor return from sock()
-	int socketDescriptor;
+	int socketDescriptor = -1;
 	//ip address
 
 	int backLog;
 	//port number
-	int port_number;
+	int port_number = 5555;
 public:
 	string ip_address = IP;
 	bool on = true;
@@ -58,7 +59,7 @@ public:
 	* The output: none										               *
 	* The Function operation: default destructor					       *
 	***********************************************************************/
-	//virtual ~Socket();
+	virtual ~Socket(){};
 	/***********************************************************************
 	* function name: initialize											   *
 	* The Input: none              										   *
@@ -74,7 +75,7 @@ public:
 	* The Function operation: sending the input data to the socket         *
 	* who connect to this socket. pure virtual method					   *
 	***********************************************************************/
-	virtual int sendData(string data) = 0;
+	virtual int sendData(string data, int a) = 0;
 	/***********************************************************************
 	* function name: receiveData 										   *
 	* The Input: none										               *
@@ -82,9 +83,7 @@ public:
 	* The Function operation: getting data from the other socket and print *
 	* the data															   *
 	***********************************************************************/
-	 int receiveData(char* buffer, int size);
-
-
+	 virtual int receiveData(char* buffer, int size, int clientDescriptor, void* d) =0;
 
 
 };
