@@ -25,10 +25,10 @@ void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
   GridPoint *start = s;
   vector<GridPoint> queue2;
   // Flags.
-  int a = 0;
+  unsigned long a = 0;
   // e - Number of while loops.
-  int e = 1;
-  int b = 0;
+  unsigned long e = 1;
+  unsigned long b = 0;
 
 
   // Mark the current node as visited and enqueue it
@@ -36,15 +36,15 @@ void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
   queue.push_back(start);
   // Create the route vector and initialize it.
   rouets = new vector<vector<GridPoint *> *>;
-  rouets->resize(100000);
+  rouets->resize(10000000);
   // Add the starting point to the vector.
   (*rouets).at(0) = new vector<GridPoint *>;
   ((*rouets).at(0))->push_back(s);
   (*((*rouets).at(0))->at(0)).changeState();
 
   // Flags.
-  int t = 0;
-  int p = 0;
+  unsigned long t = 0;
+  unsigned long p = 0;
 
   // Where all the action happens!
   while (!queue.empty()) {
@@ -58,7 +58,7 @@ void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
     // This loop is to find who is whos parent.
     if (e != 1) {
       for (t = 1; t < rouets->size(); ++t) {
-        for (int i = 0; i < (*(rouets->at(e - t))).size(); ++i) {
+        for (unsigned long i = 0; i < (*(rouets->at(e - t))).size(); ++i) {
           if ((*s).isEqual(*(*(rouets->at(e - t))).at(i))) {
             b = i;
             t = e - t;
@@ -122,8 +122,8 @@ void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
 
   queue2.push_back(*f);
   // Deleting the date structure.
-  for (int i = 1; i < e; ++i) {
-    for (int j = 0; i < (*(rouets->at(i - 1))).size() - 1; ++i) {
+  for (unsigned long i = 1; i < e; ++i) {
+    for (unsigned long j = 0; i < (*(rouets->at(i - 1))).size() - 1; ++i) {
       if ((rouets->at(i - 1))->at(j) != 0) {
         delete ((rouets->at(i - 1))->at(j));
       }

@@ -6,7 +6,9 @@
 #define PART_2_TRIP_H
 
 #include "Passenger.h"
+#include "Map.h"
 #include <boost/serialization/vector.hpp>
+#include "Bfs.h"
 
 using namespace std;
 
@@ -33,6 +35,7 @@ class Trip {
     bool done;
     // the time to start the trip
     int startTime;
+    vector<GridPoint*>* route;
 
     friend class boost::serialization::access;
     template<class Archive>
@@ -51,6 +54,7 @@ class Trip {
     }
 
 public:
+    Map *map;
     /**
      * Constructor.
      * @param id - trip id number.
@@ -115,6 +119,10 @@ public:
     bool isAssigned();
 
     void assign();
+    void setMap (Map * m) { this->map = m;}
+    vector<GridPoint*> *getRoute();
+    static void* calRoute(void* elm);
+    void prossRoute();
 };
 
 #endif //PART_2_TRIP_H

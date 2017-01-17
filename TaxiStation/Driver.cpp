@@ -20,10 +20,7 @@ Driver::Driver(int i, int age, Status status, int exp, int cabId) {
 Driver::Driver() {}
 
 vector<GridPoint*> Driver::findRoute() {
-    Bfs b(this->map);
-    vector<GridPoint*>* vec = new vector<GridPoint*>;
-    b.findShortRoute(cabInfo->getTrip()->getStart(), cabInfo->getTrip()->getEnd(), vec);
-    return *vec;
+    return *cabInfo->getTrip()->getRoute();
 }
 
 void Driver::moveOneStep() {

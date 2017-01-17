@@ -49,7 +49,10 @@ private:
     vector<ClientData*> clientDis;
     Grid * m;
     vector<char*> *buff1;
-    
+    pthread_t thread[10000];
+
+
+
  public:
     Server();
 

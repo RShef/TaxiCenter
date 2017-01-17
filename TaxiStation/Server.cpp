@@ -3,7 +3,8 @@
 //
 
 #include "Server.h"
-
+static int threadNum =0;
+static int back =0;
 Server::Server() {}
 
 Server::Server(int po) {
@@ -99,6 +100,7 @@ void Server::one(int numDrivers) {
        clientDis.at(i)->driverIdC = d->getId();
 
        //send cabs to drivers
+        this->clientDis.at(i)->th->sendData("cab", this->clientDis.at(i)->client);
        stringstream cs;
        boost::archive::text_oarchive coa(cs);
        coa << cabs.at(i);
@@ -106,7 +108,8 @@ void Server::one(int numDrivers) {
        this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
 
        //send map to clients
-       stringstream ms;
+        this->clientDis.at(i)->th->sendData("map", this->clientDis.at(i)->client);
+        stringstream ms;
        boost::archive::text_oarchive oa(ms);
        oa << m;
        buffer2 = ms.str();
@@ -123,7 +126,13 @@ void Server::two(int id, int startX, int startY, int endX, int endY, int numPass
     for (int i = 0; i < numPass; ++i) {
         pass.push_back(new Passenger(*start, *end));
     }
+
     Trip *trip = new Trip(id, start, end, numPass, tariff, pass, startTime);
+    trip->setMap(this->m);
+
+    pthread_create(&thread[threadNum], NULL,Trip::calRoute, (void*) trip);
+    threadNum++;
+
     // Add trip to the taxi center.
     tc->addTrip(trip);
     trips.push_back(trip);
@@ -168,6 +177,10 @@ void Server::nine() {
         // If the trip has not been assigned.
         if (clock->getTime() == trips.at(i)->getStartTime() - 1) {
             if (!trips.at(i)->isAssigned()) {
+                // wait for trip.
+                //cout<< "Starting cal"<<endl;
+                pthread_join(thread[i],NULL);
+                //cout<< "Fin cal"<<endl;
                 // Get closest driver.
                 Driver *temp = tc->whoIsClose(trips.at(i));
                 temp->getCab()->addTrip(trips.at(i));

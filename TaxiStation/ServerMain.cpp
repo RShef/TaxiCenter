@@ -107,17 +107,19 @@ int main(int argc, char *argv[]) {
                 break;
             }
 
+            case 7: // clean up and exit
+            {
+                server->seven();
+                break;
+            }
+
             case 9: // send trips and move one step
             {
                 server->nine();
                 break;
             }
 
-            case 7: // clean up and exit
-            {
-                server->seven();
-                break;
-            }
+
             default: {
                 break;
             }

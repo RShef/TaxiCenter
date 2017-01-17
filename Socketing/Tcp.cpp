@@ -153,18 +153,18 @@ void Tcp::acceptOneClient(ClientData* data){
 int Tcp::sendData(string data, int clientDescriptor) {
     size_t data_len = data.length();
     const char * datas = data.c_str();
-    ssize_t sent_bytes = send(this->isServer ? clientDescriptor : this->socketDescriptor, datas, data_len, 0);
-    if (sent_bytes < 0) {
-        string host = "";
-        if (isServer) {
-            host = "Server\n";
-        } else {
-            host = "Client\n";
+        ssize_t sent_bytes = send(this->isServer ? clientDescriptor : this->socketDescriptor, datas, data_len, 0);
+        if (sent_bytes < 0) {
+            string host = "";
+            if (isServer) {
+                host = "Server\n";
+            } else {
+                host = "Client\n";
+            }
+            host = "ERROR_SEND - in sendData() on " + host;
+            //return an error represent error at this method
+            perror(host.c_str());
         }
-        host = "ERROR_SEND - in sendData() on " + host;
-        //return an error represent error at this method
-        perror(host.c_str());
-    }
     //return correct if there were no problem
     return (int)sent_bytes;
 }

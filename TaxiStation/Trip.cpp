@@ -54,3 +54,19 @@ bool Trip::isAssigned() {
 void Trip::assign() {
     this->assigned = true;
 }
+
+void *Trip::calRoute(void *elm) {
+    Trip* trip = (Trip*) elm;
+    trip->prossRoute();
+    return NULL;
+}
+vector<GridPoint *>* Trip::getRoute() {
+    return this->route;
+}
+
+void Trip::prossRoute() {
+    Bfs b(this->map);
+    vector<GridPoint*>* vec = new vector<GridPoint*>;
+    b.findShortRoute(this->getStart(), this->getEnd(), vec);
+    this->route = vec;
+}
