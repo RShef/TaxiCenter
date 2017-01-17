@@ -5,7 +5,7 @@ if (APPLE)
     add_definitions(-D__GLIBCXX__)
 endif (APPLE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 set(BOOST_ROOT CACHE PATH "/usr/local/include/boost/")
 find_package(Boost 1.58.0 COMPONENTS serialization system REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})

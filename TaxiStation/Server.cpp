@@ -4,10 +4,12 @@
 
 #include "Server.h"
 
+Server::Server() {}
 
 Server::Server(int po) {
     this->port_number = po;
     this->isServer = true;
+    this->clock = new Clock();
     pthread_mutex_init(&this->connection_locker, 0);
     pthread_mutex_init(&this->list_locker, 0);
     //getting a socket descriptor and check if legal
@@ -51,35 +53,25 @@ Server::Server(int po) {
     }
 }
 
-
-void Server::setMap(int x, int y, int ob){
+void Server::setUp(int x, int y, vector <GridPoint*> obstacles){
     this->m = new Grid(x, y);
     this->tc = new TaxiCenter();
     this->buff1 = new vector<char *>;
-    if (ob > 0) {
-        for (int i = 0; i < ob; ++i) {
-            // Get input from user.
-            cin >> obsX >> comma[0] >> obsY;
-            obstacles.push_back(new GridPoint(obsX, obsY));
-        }
-    }
+    this->obstacles = obstacles;
 }
 
 void* Server::threadFunction(void* elm) {
     ClientData * d = (ClientData*) elm;
     memset(d->buffer, 0, sizeof(d->buffer));
     d->th->receiveData(d->buffer, sizeof(d->buffer), d->client, d);
-
-
 }
 
-void Server::one() {
-    cin >> input1;
+void Server::one(int numDrivers) {
     Driver *d;
     void* st;
     //initialize clients UDPs
 
-    for (int i = 0; i< input1; i++) {
+    for (int i = 0; i< numDrivers; i++) {
         pthread_t thread;
         ClientData* data = new ClientData();
 
@@ -91,11 +83,11 @@ void Server::one() {
 
     }
     // receive driver from client
-    while (clientDis.size()<input1){
+    while (clientDis.size() < numDrivers){
 
     }
     int i;
-   for(i = 0; i<input1; i++) {
+    for(i = 0; i < numDrivers; i++) {
        stringstream ds;
        ds << clientDis.at(i)->buffer;
        boost::archive::text_iarchive ia(ds);
@@ -106,7 +98,6 @@ void Server::one() {
        tc->getDriverById(d->getId())->addMap(m);
        clientDis.at(i)->driverIdC = d->getId();
 
-       /**
        //send cabs to drivers
        stringstream cs;
        boost::archive::text_oarchive coa(cs);
@@ -121,49 +112,42 @@ void Server::one() {
        buffer2 = ms.str();
        this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
        d->addMap(m);
-        **/
-   }
+    }
 }
-void Server::two() {
-    cin >> input1 >> comma[0] >> input2 >> comma[1] >> input3 >> comma[2] >> input4
-        >> comma[3] >> input5 >> comma[4] >> input6 >> comma[5] >> input10 >> comma[6] >> input7;
-    GridPoint *start = new GridPoint (input2, input3);
-    GridPoint *end = new GridPoint(input4, input5);
+
+void Server::two(int id, int startX, int startY, int endX, int endY, int numPass, double tariff, int startTime) {
+    GridPoint *start = new GridPoint (startX, startY);
+    GridPoint *end = new GridPoint(endX, endY);
     vector<Passenger*> pass;
     // Create passengers.
-    for (int i = 0; i < input6; ++i) {
+    for (int i = 0; i < numPass; ++i) {
         pass.push_back(new Passenger(*start, *end));
     }
-    Trip *trip = new Trip(input1, start, end, input6, input10, pass, input7);
+    Trip *trip = new Trip(id, start, end, numPass, tariff, pass, startTime);
     // Add trip to the taxi center.
     tc->addTrip(trip);
     trips.push_back(trip);
     counter++;
 }
 
-void Server::three() {
-    // input format: id, carType, manufacture, color
-    cin >> input1 >> comma[0] >> input2 >> comma[1] >> input8 >> comma[2] >> input9;
-    int car = findCar(input8);
-    int color = findColor(input9);
+void Server::three(int id, int type, int car, int color) {
     // Checking which type of cab it is.
-    if (input2 == 1) {
-        Cab *sc = new StandardCab(input1, (Cab::Car) car, (Cab::Colors) color);
+    if (type == 1) {
+        Cab *sc = new StandardCab(id, (Cab::Car) car, (Cab::Colors) color);
         // Add cab to taxi center.
         tc->addCab(sc);
         cabs.push_back(sc);
     } else {
-        Cab *lc = new LuxuryCab(input1, (Cab::Car) car, (Cab::Colors) color);
+        Cab *lc = new LuxuryCab(id, (Cab::Car) car, (Cab::Colors) color);
         tc->addCab(lc);
         cabs.push_back(lc);
     }
-
 }
 
-void Server::four() {
-    cin >> input1;
-    tc->printDriverLocById(input1);
+void Server::four(int id) {
+    tc->printDriverLocById(id);
 }
+
 void Server::seven() {
     delete(tc);
     delete(m);
@@ -178,6 +162,7 @@ void Server::seven() {
     clients.clear();
 
 }
+
 void Server::nine() {
     for (int i = 0; i < trips.size(); ++i) {
         // If the trip has not been assigned.
@@ -205,11 +190,13 @@ void Server::nine() {
     tc->sendTaxi(clock->getTime());
     clock->advance();
 }
+
 void Server::PreWork() {
 
     // construct obstacles
 
 }
+
 int Server::sendData(string data, int clientDescriptor) {
     size_t data_len = data.length();
     const char * datas = data.c_str();
@@ -261,8 +248,6 @@ int Server::receiveData(char* buffer, int size, int clientDescriptor, void* d) {
     return (int)read_bytes;
 }
 
-
-
 void Server::acceptOneClient(ClientData* data){
     int clientDescriptor = 0;
     int client_sin;
@@ -282,11 +267,4 @@ void Server::acceptOneClient(ClientData* data){
         perror("ERROR_CONNECT - in acceptOneClient()\n");
         exit(1);
     }
-
 }
-
-
-
-
-
-
