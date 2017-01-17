@@ -178,23 +178,23 @@ void Server::nine() {
         if (clock->getTime() == trips.at(i)->getStartTime() - 1) {
             if (!trips.at(i)->isAssigned()) {
                 // wait for trip.
-                //cout<< "Starting cal"<<endl;
+                cout<< "Starting cal"<<endl;
                 pthread_join(thread[i],NULL);
-                //cout<< "Fin cal"<<endl;
+                cout<< "Fin cal"<<endl;
                 // Get closest driver.
                 Driver *temp = tc->whoIsClose(trips.at(i));
                 temp->getCab()->addTrip(trips.at(i));
                 temp->setRoute();
                 //prepare client to receive trip
-                //ClientData * cl = this->findClientById(temp->getId());
-                //this->findClientById(temp->getId())->th->sendData("trip",cl->client);
+                ClientData * cl = this->findClientById(temp->getId());
+                cl->th->sendData("trip",cl->client);
                 //send trip to client
                 stringstream ts;
                 boost::archive::text_oarchive toa(ts);
                 Trip *tt = trips.at(i);
                 toa << tt;
                 buffer2 = ts.str();
-                //this->findClientById(temp->getId())->th->sendData(buffer2,cl->client);
+                cl->th->sendData(buffer2,cl->client);
                 // set trip as assigned
                 trips.at(i)->assign();
             }

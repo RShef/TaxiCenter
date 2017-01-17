@@ -120,11 +120,13 @@ void Client::ListenToServer() {
             boost::archive::text_iarchive tia(ts);
             Trip *trip;
             tia >> trip;
+            cout<<trip->getStartTime()<<endl;
             driver->getCab()->addTrip(trip);
             driver->setRoute();
         }
         if (strcmp(this->buffer, "go") == 0) {
             driver->moveOneStep();
+            driver->printLoc();
             this->clock->advance();
         }
     }
