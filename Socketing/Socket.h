@@ -29,22 +29,19 @@ using namespace std;
 
 #define IP "127.0.0.1"
 
-
-
 class Socket {
  public:
 	//true is the socket is for a server, false if for a client
-	bool isServer = true;
+	bool isServer;
 	//the socket descriptor return from sock()
-	int socketDescriptor = -1;
+	int socketDescriptor;
 	//ip address
-
 	int backLog;
 	//port number
-	int port_number = 5555;
+	int port_number;
 public:
 	string ip_address = IP;
-	bool on = true;
+	bool on;
 
 	/***********************************************************************
 	* function name: Socket												   *

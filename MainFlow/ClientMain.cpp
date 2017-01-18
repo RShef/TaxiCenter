@@ -31,7 +31,7 @@ int findStatus(char statusInput) {
 
 int main(int argc, char *argv[]) {
 
-    easyloggingpp::Configurations confFromFile("../Logging/Client_Config");
+    easyloggingpp::Configurations confFromFile("Logging/Client_Config");
     easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
     LOG(INFO) << "Client starting";
 

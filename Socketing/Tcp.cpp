@@ -2,21 +2,16 @@
 // Created by Roy Shefi on 13/01/2017.
 //
 
-/**
-* How to use :
-*	int clientDescriptor = this->socket->acceptOneClient();
-*	this variable represents the client descriptor for you to engage in
-*	sending and receiving data. Use this variable when calling sendData and receiveData.
-*/
-
-
 /************************************************************
 * File description: TCP implementation.						*
 * the class inherit from socket. 							*
 * methods of tcp socket type								*
 ************************************************************/
 
+#include <stdio.h>
 #include "Tcp.h"
+#include "../Logging/easylogging++.h"
+
 class Server;
 /***********************************************************************
 * function name: Tcp												   *
@@ -26,11 +21,12 @@ class Server;
 * port_num by the input												   *
 ***********************************************************************/
 Tcp::Tcp(bool isServers, int port_num) {
+    this->socketDescriptor = -1;
+    this->on = true;
     this->port_number = port_num;
     this->isServer = isServers;
     pthread_mutex_init(&this->connection_locker, 0);
     pthread_mutex_init(&this->list_locker, 0);
-
 }
 
 /***********************************************************************
@@ -55,7 +51,7 @@ int Tcp::initialize() {
     this->socketDescriptor = socket(AF_INET, SOCK_STREAM, 0); // (IPv4 , TCP, flags) --> Socket Descriptor
     if (this->socketDescriptor < 0) {
         //return an error represent error at this method
-        perror("ERROR_SOCKET - in initialize()\n");
+        LOG(ERROR) << "ERROR_SOCKET - in initialize()\n";
         return 0;
     }
     //if server
@@ -69,13 +65,13 @@ int Tcp::initialize() {
         //bind
         if (::bind(this->socketDescriptor,(struct sockaddr *) &sin, sizeof(sin)) < 0) {
             //return an error represent error at this method
-            perror("ERROR_BIND - in initialize()\n");
+            LOG(ERROR) << "ERROR_BIND - in initialize()\n";
             return 0;
         }
         //listen
         if (listen(this->socketDescriptor, this->backLog) < 0) {
             //return an error represent error at this method
-            perror("ERROR_LISTEN - in initialize()\n");
+            LOG(ERROR) << "ERROR_LISTEN - in initialize()\n";
             return 0;
         }
         // start to accept first client (get 0 if failed)
@@ -90,7 +86,7 @@ int Tcp::initialize() {
         if (connect(this->socketDescriptor,
                     (struct sockaddr *) &sin, sizeof(sin)) < 0) {
             //return an error represent error at this method
-            perror("ERROR_CONNECT - in initialize()\n");
+            LOG(ERROR) << "ERROR_CONNECT - in initialize()\n";
             return 0;
         }
         // success client initialize
@@ -100,11 +96,6 @@ int Tcp::initialize() {
     return 1;
 
 }
-
-
-
-
-
 
 /***********************************************************************
 * function name: acceptOneClient									   *
@@ -131,16 +122,11 @@ void Tcp::acceptOneClient(ClientData* data){
 
     if (clientDescriptor < 0) {
         //return an error represent error at this method
-        perror("ERROR_CONNECT - in acceptOneClient()\n");
+        LOG(ERROR) << "ERROR_CONNECT - in acceptOneClient()\n";
         exit(1);
     }
 
 }
-
-
-
-
-
 
 /***********************************************************************
 * function name: sendData											   *
@@ -163,7 +149,7 @@ int Tcp::sendData(string data, int clientDescriptor) {
             }
             host = "ERROR_SEND - in sendData() on " + host;
             //return an error represent error at this method
-            perror(host.c_str());
+            LOG(ERROR) << host.c_str();
         }
     //return correct if there were no problem
     return (int)sent_bytes;
@@ -189,12 +175,12 @@ int Tcp::receiveData(char* buffer, int size, int clientDescriptor, void* d) {
         }
         if (read_bytes == 0) {
             host = "CONNECTION_CLOSED - in receiveData() on " + host;
-            perror(host.c_str());
+            LOG(ERROR) << host.c_str();
             exit(1);
         } else {
             host = "ERROR_RECEIVE - in receiveData() on " + host;
             //return an error represent error at this method
-            perror(host.c_str());
+            LOG(ERROR) << host.c_str();
             exit(1);
         }
     }
@@ -215,4 +201,3 @@ void* Tcp::threadRecive(void* data) {
 
     return  NULL;
 }
-

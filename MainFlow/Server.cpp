@@ -14,6 +14,7 @@ Server::Server(int po) {
     this->port_number = po;
     this->isServer = true;
     this->clock = new Clock();
+    this->counter = 0;
     pthread_mutex_init(&this->connection_locker, 0);
     pthread_mutex_init(&this->list_locker, 0);
     //getting a socket descriptor and check if legal
@@ -104,23 +105,24 @@ void Server::one(int numDrivers) {
 
         //send cabs to drivers
         this->clientDis.at(i)->th->sendData("cab", this->clientDis.at(i)->client);
-        usleep(100000);
+        usleep(500000);
         stringstream cs;
         boost::archive::text_oarchive coa(cs);
         coa << cabs.at(i);
         buffer2 = cs.str();
         this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
         LOG(INFO) << "Cab " << cabs.at(i)->getId() << " sent to driver " << drivers.at(i)->getId();
-        usleep(100000);
+        usleep(500000);
 
         //send map to clients
         this->clientDis.at(i)->th->sendData("map", this->clientDis.at(i)->client);
-        usleep(100000);
+        usleep(500000);
         stringstream ms;
         boost::archive::text_oarchive oa(ms);
         oa << m;
         buffer2 = ms.str();
         this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
+        usleep(500000);
         LOG(INFO) << "Map sent to driver " << drivers.at(i)->getId();
         d->addMap(m);
     }
@@ -199,6 +201,7 @@ void Server::nine() {
                 //prepare client to receive trip
                 ClientData *cl = this->findClientById(temp->getId());
                 cl->th->sendData("trip", cl->client);
+                usleep(500000);
                 //send trip to client
                 stringstream ts;
                 boost::archive::text_oarchive toa(ts);
@@ -206,6 +209,7 @@ void Server::nine() {
                 toa << tt;
                 buffer2 = ts.str();
                 cl->th->sendData(buffer2, cl->client);
+                usleep(500000);
                 LOG(INFO) << "Trip " << tt->getId() << " sent to driver " << temp->getId();
                 // set trip as assigned
                 trips.at(i)->assign();
@@ -219,6 +223,7 @@ void Server::nine() {
                 ClientData *cl = this->findClientById(temp->getId());
                 tc->sendTaxi(temp);
                 cl->th->sendData("go", cl->client);
+                usleep(500000);
             }
         }
     }

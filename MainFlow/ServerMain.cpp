@@ -53,7 +53,7 @@ int findColor(char colorInput) {
 
 int main(int argc, char *argv[]) {
 
-    easyloggingpp::Configurations confFromFile("../Logging/Server_Config");
+    easyloggingpp::Configurations confFromFile("Logging/Server_Config");
     easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
     LOG(INFO) << "Server starting";
 

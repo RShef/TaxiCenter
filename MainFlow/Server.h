@@ -37,7 +37,7 @@ private:
     pthread_mutex_t list_locker1;
     char buffer[6000];
     string buffer2;
-    int counter = 0;
+    int counter;
     bool online;
     vector <Driver*> drivers;
     vector <Cab*> cabs;

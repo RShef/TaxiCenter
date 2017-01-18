@@ -1,0 +1,10 @@
+For logging in this program we used "easylogging++".
+We used it to:
+1. log every send and receive action on both the server and clients to make sure communication was correct (INFO)
+2. log every movement of the driver on both the server and clients to make sure it was moving correctly (DEBUG)
+3. log trips' route calculations (DEBUG)
+
+Logger used 2 config files (for server and clients)
+and wrote to 2 log files (for server and clients)
+
+Logging was very helpful for debugging and finding exactly where the program was failing.
