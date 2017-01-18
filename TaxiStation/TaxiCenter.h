@@ -69,7 +69,7 @@ public:
     /**
      * Sends ALL drivers to destination.
      */
-    void sendTaxi(int time);
+    void sendTaxi(Driver *d);
 
     /**
     * Sends the map to all the drivers.

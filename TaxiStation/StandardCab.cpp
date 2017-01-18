@@ -12,6 +12,7 @@ StandardCab::StandardCab(int id, Car car, Colors color) {
     this->car = car;
     this->color = color;
     this->isLux = false;
+    this->trip = 0;
 }
 
 void StandardCab::move() {

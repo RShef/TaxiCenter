@@ -3,7 +3,9 @@
 //
 
 #include "Client.h"
+#include "../Logging/easylogging++.h"
 
+_INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
@@ -29,6 +31,10 @@ int findStatus(char statusInput) {
 
 int main(int argc, char *argv[]) {
 
+    easyloggingpp::Configurations confFromFile("../Logging/Client_Config");
+    easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
+    LOG(INFO) << "Client starting";
+
     int id, age, exp, cabId;
     char stat;
     char comma[4];
@@ -36,6 +42,7 @@ int main(int argc, char *argv[]) {
 
     Client* client = new Client(argv[1],atoi(argv[2]));
     client->Connect();
+
     // Crate a new driver by user input.
     cin >> id >> comma[0] >> age >> comma[1] >> stat >> comma[2] >> exp >> comma[3] >> cabId;
     int status = findStatus(stat);
@@ -44,5 +51,7 @@ int main(int argc, char *argv[]) {
     while (client->connected) {
         client->ListenToServer();
     }
+    client->~Client();
+    LOG(INFO) << "Client exiting... Goodbye";
     return 0;
 }

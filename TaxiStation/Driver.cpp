@@ -4,6 +4,7 @@
 
 #include "Driver.h"
 #import "Cab.h"
+#include "../Logging/easylogging++.h"
 
 Driver::Driver(int i, int age, Status status, int exp, int cabId) {
 
@@ -31,6 +32,7 @@ void Driver::moveOneStep() {
         currentLoc = this->route.at(1);
         this->route.erase(this->route.begin());
     }
+    LOG(DEBUG) << "driver " << this->id << " moved to " << this->currentLoc->x << "," << this->currentLoc->y;
     this->getCab()->move();
     this->getCab()->getTrip()->move(this->getCab()->getType());
     // Mark Trip as done if arrived at destination

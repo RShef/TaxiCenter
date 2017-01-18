@@ -35,26 +35,17 @@ vector <Socket*>* TaxiCenter::getClients() {
     return this->clients;
 }
 
-
 void TaxiCenter::answerCall() {
 
 }
 
-void TaxiCenter::sendTaxi(int time) {
-    for (int i = 0; i < (*this->drivers).size(); ++i) {
-        Driver *temp = (*this->drivers).at(i);
-        if (temp->getCab()->getTrip() != NULL && !temp->getCab()->getTrip()->isDone()) {
-            if (temp->getCab()->getTrip()->getStartTime() <= time) {
-                // move driver one step
-                temp->moveOneStep();
-                //this->clients->at(i)->sendData("go",0);
+void TaxiCenter::sendTaxi(Driver *d) {
 
-                // Return the driver and cab to the available drivers list for future trips if trip is done
-                if (temp->getCab()->getTrip()->isDone()) {
-                    (*this->NotActiveDrivers).push_back(temp);
-                }
-            }
-        }
+    d->moveOneStep();
+
+    // Return the driver and cab to the available drivers list for future trips if trip is done
+    if (d->getCab()->getTrip()->isDone()) {
+        (*this->NotActiveDrivers).push_back(d);
     }
 }
 

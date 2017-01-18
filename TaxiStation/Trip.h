@@ -13,7 +13,7 @@
 using namespace std;
 
 class Trip {
-    //Test.
+
  private:
     // The trip id.
     int id;
@@ -51,6 +51,7 @@ class Trip {
         ar & this->assigned;
         ar & this->done;
         ar & this->startTime;
+        ar & this->route;
     }
 
 public:
@@ -77,6 +78,8 @@ public:
      * Move to next point on the trip.
      */
     void move(bool isLux);
+
+    int getId();
 
     /**
      * Return he distance gone so far.
@@ -119,9 +122,13 @@ public:
     bool isAssigned();
 
     void assign();
+
     void setMap (Map * m) { this->map = m;}
+
     vector<GridPoint*> *getRoute();
+
     static void* calRoute(void* elm);
+
     void prossRoute();
 };
 

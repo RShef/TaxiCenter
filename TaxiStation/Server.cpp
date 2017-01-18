@@ -3,8 +3,11 @@
 //
 
 #include "Server.h"
+#include "../Logging/easylogging++.h"
+
 static int threadNum =0;
 static int back =0;
+
 Server::Server() {}
 
 Server::Server(int po) {
@@ -56,9 +59,11 @@ Server::Server(int po) {
 
 void Server::setUp(int x, int y, vector <GridPoint*> obstacles){
     this->m = new Grid(x, y);
+    LOG(INFO) << "Grid of " << x  << "X" << y << " created";
     this->tc = new TaxiCenter();
     this->buff1 = new vector<char *>;
     this->obstacles = obstacles;
+    LOG(INFO) << obstacles.size() << " obstacles created";
 }
 
 void* Server::threadFunction(void* elm) {
@@ -70,7 +75,6 @@ void* Server::threadFunction(void* elm) {
 void Server::one(int numDrivers) {
     Driver *d;
     void* st;
-    //initialize clients UDPs
 
     for (int i = 0; i< numDrivers; i++) {
         pthread_t thread;
@@ -81,40 +85,44 @@ void Server::one(int numDrivers) {
         memset(data->buffer, 0, sizeof(buffer));
         data->th = this;
         pthread_create(&thread, NULL,threadFunction, (void*) data);
-
     }
     // receive driver from client
-    while (clientDis.size() < numDrivers){
+    while (clientDis.size() < numDrivers) {}
 
-    }
     int i;
     for(i = 0; i < numDrivers; i++) {
-       stringstream ds;
-       ds << clientDis.at(i)->buffer;
-       boost::archive::text_iarchive ia(ds);
-       ia >> d;
-       drivers.push_back(d);
-       tc->addDriver(d);
-       d->addCab(tc->getCabById(d->getCabId()));
-       tc->getDriverById(d->getId())->addMap(m);
-       clientDis.at(i)->driverIdC = d->getId();
+        stringstream ds;
+        ds << clientDis.at(i)->buffer;
+        boost::archive::text_iarchive ia(ds);
+        ia >> d;
+        drivers.push_back(d);
+        LOG(INFO) << "Driver with ID " << d->getId() << " received";
+        tc->addDriver(d);
+        d->addCab(tc->getCabById(d->getCabId()));
+        tc->getDriverById(d->getId())->addMap(m);
+        clientDis.at(i)->driverIdC = d->getId();
 
-       //send cabs to drivers
+        //send cabs to drivers
         this->clientDis.at(i)->th->sendData("cab", this->clientDis.at(i)->client);
-       stringstream cs;
-       boost::archive::text_oarchive coa(cs);
-       coa << cabs.at(i);
-       buffer2 = cs.str();
-       this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
+        usleep(100000);
+        stringstream cs;
+        boost::archive::text_oarchive coa(cs);
+        coa << cabs.at(i);
+        buffer2 = cs.str();
+        this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
+        LOG(INFO) << "Cab " << cabs.at(i)->getId() << " sent to driver " << drivers.at(i)->getId();
+        usleep(100000);
 
-       //send map to clients
+        //send map to clients
         this->clientDis.at(i)->th->sendData("map", this->clientDis.at(i)->client);
+        usleep(100000);
         stringstream ms;
-       boost::archive::text_oarchive oa(ms);
-       oa << m;
-       buffer2 = ms.str();
-       this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
-       d->addMap(m);
+        boost::archive::text_oarchive oa(ms);
+        oa << m;
+        buffer2 = ms.str();
+        this->clientDis.at(i)->th->sendData(buffer2, this->clientDis.at(i)->client);
+        LOG(INFO) << "Map sent to driver " << drivers.at(i)->getId();
+        d->addMap(m);
     }
 }
 
@@ -128,6 +136,7 @@ void Server::two(int id, int startX, int startY, int endX, int endY, int numPass
     }
 
     Trip *trip = new Trip(id, start, end, numPass, tariff, pass, startTime);
+    LOG(INFO) << "New Trip with ID " << id << " created";
     trip->setMap(this->m);
 
     pthread_create(&thread[threadNum], NULL,Trip::calRoute, (void*) trip);
@@ -143,11 +152,13 @@ void Server::three(int id, int type, int car, int color) {
     // Checking which type of cab it is.
     if (type == 1) {
         Cab *sc = new StandardCab(id, (Cab::Car) car, (Cab::Colors) color);
+        LOG(INFO) << "New Standard cab with ID " << id << " created";
         // Add cab to taxi center.
         tc->addCab(sc);
         cabs.push_back(sc);
     } else {
         Cab *lc = new LuxuryCab(id, (Cab::Car) car, (Cab::Colors) color);
+        LOG(INFO) << "New Luxury cab with ID " << id << " created";
         tc->addCab(lc);
         cabs.push_back(lc);
     }
@@ -158,18 +169,18 @@ void Server::four(int id) {
 }
 
 void Server::seven() {
+    for (int i = 0; i < drivers.size(); ++i) {
+        //clients.at(i)->sendData("quit",0);
+        ClientData *cl = this->findClientById(drivers.at(i)->getId());
+        cl->th->sendData("quit", cl->client);
+    }
     delete(tc);
     delete(m);
     drivers.clear();
     cabs.clear();
     trips.clear();
     obstacles.clear();
-    for (int i = 0; i < clients.size(); ++i) {
-        clients.at(i)->sendData("quit",0);
-        //clients.at(i)->~Udp();
-    }
     clients.clear();
-
 }
 
 void Server::nine() {
@@ -178,29 +189,39 @@ void Server::nine() {
         if (clock->getTime() == trips.at(i)->getStartTime() - 1) {
             if (!trips.at(i)->isAssigned()) {
                 // wait for trip.
-                cout<< "Starting cal"<<endl;
+                LOG(DEBUG) << "Starting trip calculation";
                 pthread_join(thread[i],NULL);
-                cout<< "Fin cal"<<endl;
+                LOG(DEBUG) << "Trip calculation done";
                 // Get closest driver.
                 Driver *temp = tc->whoIsClose(trips.at(i));
                 temp->getCab()->addTrip(trips.at(i));
                 temp->setRoute();
                 //prepare client to receive trip
-                ClientData * cl = this->findClientById(temp->getId());
-                cl->th->sendData("trip",cl->client);
+                ClientData *cl = this->findClientById(temp->getId());
+                cl->th->sendData("trip", cl->client);
                 //send trip to client
                 stringstream ts;
                 boost::archive::text_oarchive toa(ts);
                 Trip *tt = trips.at(i);
                 toa << tt;
                 buffer2 = ts.str();
-                cl->th->sendData(buffer2,cl->client);
+                cl->th->sendData(buffer2, cl->client);
+                LOG(INFO) << "Trip " << tt->getId() << " sent to driver " << temp->getId();
                 // set trip as assigned
                 trips.at(i)->assign();
             }
         }
     }
-    tc->sendTaxi(clock->getTime());
+    for (int i = 0; i < this->drivers.size(); ++i) {
+        Driver *temp = this->drivers.at(i);
+        if (temp->getCab()->getTrip() != NULL && !temp->getCab()->getTrip()->isDone()) {
+            if (temp->getCab()->getTrip()->getStartTime() <= clock->getTime()) {
+                ClientData *cl = this->findClientById(temp->getId());
+                tc->sendTaxi(temp);
+                cl->th->sendData("go", cl->client);
+            }
+        }
+    }
     clock->advance();
 }
 

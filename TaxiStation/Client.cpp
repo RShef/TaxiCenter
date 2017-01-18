@@ -3,6 +3,7 @@
 //
 
 #include "Client.h"
+#include "../Logging/easylogging++.h"
 
 Client::Client(char *ip, int port) {
     this->ip = ip;
@@ -36,7 +37,6 @@ int Client::Connect() {
     }
     return 0;
 }
-
 
 int Client::sendData(string data) {
     size_t data_len = data.length();
@@ -89,12 +89,13 @@ void Client::sendDriver(int id, int age, int status, int exp, int cabId) {
     doa << driver;
     string buffer2 = ds.str();
     this->sendData(buffer2);
+    LOG(INFO) << "Driver with id " << driver->getId() << " created and sent to server";
 }
 
 void Client::ListenToServer() {
     stringstream cs;
 
-    if (this->receiveData() != 0) {
+    if (this->receiveData() == 0) {
         if (strcmp(this->buffer, "cab") == 0) {
             this->receiveData();
             cs << this->buffer;
@@ -102,6 +103,8 @@ void Client::ListenToServer() {
             Cab *cab;
             cia >> cab;
             this->driver->addCab(cab);
+            LOG(INFO) << "Cab with ID " << cab->getId() << " received";
+            return;
         }
         if (strcmp(this->buffer, "map") == 0) {
             this->receiveData();
@@ -111,6 +114,8 @@ void Client::ListenToServer() {
             Grid *m;
             ia >> m;
             driver->addMap(m);
+            LOG(INFO) << "Map received";
+            return;
         }
         if (strcmp(this->buffer, "trip") == 0) {
             this->receiveData();
@@ -120,18 +125,20 @@ void Client::ListenToServer() {
             boost::archive::text_iarchive tia(ts);
             Trip *trip;
             tia >> trip;
-            cout<<trip->getStartTime()<<endl;
+            LOG(INFO) << "Trip with ID " << trip->getId() << " received";
             driver->getCab()->addTrip(trip);
             driver->setRoute();
+            return;
         }
         if (strcmp(this->buffer, "go") == 0) {
             driver->moveOneStep();
-            driver->printLoc();
+            //driver->printLoc();
             this->clock->advance();
+            return;
+        }
+        if (strcmp(this->buffer, "quit") == 0) {
+            this->connected = false;
+            return;
         }
     }
-
 }
-
-
-

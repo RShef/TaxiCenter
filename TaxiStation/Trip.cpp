@@ -27,6 +27,10 @@ void Trip::move(bool isLux) {
     }
 }
 
+int Trip::getId() {
+    return this->id;
+}
+
 int Trip::getDisGone() {
     return this->distGone;
 }
@@ -60,6 +64,7 @@ void *Trip::calRoute(void *elm) {
     trip->prossRoute();
     return NULL;
 }
+
 vector<GridPoint *>* Trip::getRoute() {
     return this->route;
 }

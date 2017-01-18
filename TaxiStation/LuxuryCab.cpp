@@ -12,6 +12,7 @@ LuxuryCab::LuxuryCab(int id, Car car, Colors color) {
     this->car = car;
     this->color = color;
     this->isLux = true;
+    this->trip = 0;
 }
 
 double LuxuryCab::getPrice() {

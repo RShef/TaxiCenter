@@ -2,8 +2,13 @@
 // Created by Oded Thaller on 11/12/2016.
 //
 
+#define _ELPP_THREAD_SAFE
+
 #include <iostream>
 #include "Server.h"
+#include "../Logging/easylogging++.h"
+
+_INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
@@ -47,6 +52,11 @@ int findColor(char colorInput) {
 }
 
 int main(int argc, char *argv[]) {
+
+    easyloggingpp::Configurations confFromFile("../Logging/Server_Config");
+    easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
+    LOG(INFO) << "Server starting";
+
     // input variables
     int gridX, gridY, numOfObstacles;
     int task;
@@ -110,7 +120,8 @@ int main(int argc, char *argv[]) {
             case 7: // clean up and exit
             {
                 server->seven();
-                break;
+                LOG(INFO) << "Server exiting... Goodbye";
+                return 0;
             }
 
             case 9: // send trips and move one step
