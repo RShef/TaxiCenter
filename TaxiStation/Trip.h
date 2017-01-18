@@ -6,9 +6,9 @@
 #define PART_2_TRIP_H
 
 #include "Passenger.h"
-#include "Map.h"
+#include "../World/Map.h"
 #include <boost/serialization/vector.hpp>
-#include "Bfs.h"
+#include "../World/Bfs.h"
 
 using namespace std;
 

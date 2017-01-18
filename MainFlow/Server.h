@@ -7,12 +7,12 @@
 
 #include <iostream>
 #include <pthread.h>
-#include "GridPoint.h"
-#include "TaxiCenter.h"
-#include "Grid.h"
-#include "StandardCab.h"
-#include "LuxuryCab.h"
-#include "Clock.h"
+#include "../World/GridPoint.h"
+#include "../TaxiStation/TaxiCenter.h"
+#include "../World/Grid.h"
+#include "../TaxiStation/Vehicles/StandardCab.h"
+#include "../TaxiStation/Vehicles/LuxuryCab.h"
+#include "../World/Clock.h"
 #include <boost/serialization/export.hpp>
 #include "../Socketing/Socket.h"
 #include <tcl.h>

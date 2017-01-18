@@ -3,7 +3,7 @@
 //
 
 #include "Driver.h"
-#import "Cab.h"
+#include "Vehicles/Cab.h"
 #include "../Logging/easylogging++.h"
 
 Driver::Driver(int i, int age, Status status, int exp, int cabId) {
@@ -60,14 +60,6 @@ void Driver::addMap(Map* map) {
     this->map = map;
 }
 
-void Driver::addPassLis(Listener list) {
-
-}
-
-void Driver::addLocLis(Listener list) {
-
-}
-
 void Driver::notifyTime() {
 
 }
@@ -79,8 +71,6 @@ void Driver::printLoc() {
 int Driver::getId() {
     return this->id;
 }
-
-
 
 void Driver::addCab(Cab *cab) {
     this->cabInfo = cab;

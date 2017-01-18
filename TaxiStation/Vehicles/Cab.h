@@ -6,9 +6,9 @@
 #define PART_2_CAB_H
 
 #include <iostream>
-#include "Driver.h"
-#include "GridPoint.h"
-#include "Trip.h"
+#include "../Driver.h"
+#include "../../World/GridPoint.h"
+#include "../Trip.h"
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 

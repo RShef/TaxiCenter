@@ -8,6 +8,7 @@
 #include "Map.h"
 #include <iostream>
 #include <vector>
+#include <list>
 #include "Point.h"
 #include "GridPoint.h"
 

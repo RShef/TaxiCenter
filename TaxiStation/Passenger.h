@@ -5,7 +5,7 @@
 #ifndef PART_2_PASSENGER_H
 #define PART_2_PASSENGER_H
 
-#include "GridPoint.h"
+#include "../World/GridPoint.h"
 
 using namespace std;
 

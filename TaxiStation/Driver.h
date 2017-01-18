@@ -5,9 +5,8 @@
 #ifndef PART_2_DRIVER_H
 #define PART_2_DRIVER_H
 
-#include "Map.h"
-#include "Listener.h"
-#include "Bfs.h"
+#include "../World/Map.h"
+#include "../World/Bfs.h"
 //#include "Cab.h"
 
 class Cab;
@@ -39,18 +38,6 @@ public:
      * @return A vector of points consisting the shortest path.
      */
     vector<GridPoint*> findRoute();
-
-    /**
-     * Adds a passenger listener.
-     * @param list - passenger listener.
-     */
-    void addPassLis(Listener list);
-
-    /**
-     * Adds a location listener.
-     * @param list - location listener.
-     */
-    void addLocLis(Listener list);
 
     /**
      * Notifys the driver time has passed.
