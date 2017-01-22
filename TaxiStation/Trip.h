@@ -118,6 +118,8 @@ public:
      * @return true if trip completed.
      */
     bool isDone();
+    bool cal;
+
 
     bool isAssigned();
 

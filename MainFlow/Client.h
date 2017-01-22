@@ -28,20 +28,17 @@ using namespace std;
 
 class Client {
  public:
+    Client(char* ip, int port);
     void sendDriver(int id, int age, int stat, int exp, int cabId);
     void ListenToServer();
     int sendData(string data);
     int receiveData();
     int Connect ();
     virtual ~Client();
-    Client(char* ip, int port);
     char buffer[800000];
     bool connected;
     Driver * driver;
     Clock *clock;
-
-
-
 
  private:
     char* ip;

@@ -15,6 +15,7 @@ Trip::Trip(int id, GridPoint* start, GridPoint* end, int numPass, double tariff,
     this->done = false;
     this->assigned = false;
     this->startTime = startTime;
+    this->cal = false;
 }
 
 Trip::Trip() {}
@@ -62,6 +63,7 @@ void Trip::assign() {
 void *Trip::calRoute(void *elm) {
     Trip* trip = (Trip*) elm;
     trip->prossRoute();
+    trip->cal = true;
     return NULL;
 }
 

@@ -15,6 +15,9 @@ Server::Server(int po) {
     this->isServer = true;
     this->clock = new Clock();
     this->counter = 0;
+    this->tp = new ThreadPool(5);
+    this->jobs = new vector<Job*>;
+
     pthread_mutex_init(&this->connection_locker, 0);
     pthread_mutex_init(&this->list_locker, 0);
     //getting a socket descriptor and check if legal
@@ -141,8 +144,13 @@ void Server::two(int id, int startX, int startY, int endX, int endY, int numPass
     LOG(INFO) << "New Trip with ID " << id << " created";
     trip->setMap(this->m);
 
-    pthread_create(&thread[threadNum], NULL,Trip::calRoute, (void*) trip);
-    threadNum++;
+    // Multi thread work.
+    Job *j = new Job(Trip::calRoute,(void*) trip);
+    this->jobs->push_back(j);
+    this->tp->addJob(j);
+    LOG(INFO) << "New Job (Trip) added to thread pool";
+    //pthread_create(&thread[threadNum], NULL,Trip::calRoute, (void*) trip);
+    //threadNum++;
 
     // Add trip to the taxi center.
     tc->addTrip(trip);
@@ -192,8 +200,12 @@ void Server::nine() {
             if (!trips.at(i)->isAssigned()) {
                 // wait for trip.
                 LOG(DEBUG) << "Starting trip calculation";
-                pthread_join(thread[i],NULL);
+                while (!trips.at(i)->cal){
+                    // Not good programing at all.
+                }
+                //pthread_join(thread[i],NULL);
                 LOG(DEBUG) << "Trip calculation done";
+
                 // Get closest driver.
                 Driver *temp = tc->whoIsClose(trips.at(i));
                 temp->getCab()->addTrip(trips.at(i));
