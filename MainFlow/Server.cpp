@@ -96,6 +96,10 @@ void Server::one(int numDrivers) {
     int i;
     for(i = 0; i < numDrivers; i++) {
         stringstream ds;
+        // if the input from the client is wrong.
+        if (strcmp(clientDis.at(i)->buffer,"wrong!")){
+            this->quit(clientDis.at(i));
+        }
         ds << clientDis.at(i)->buffer;
         boost::archive::text_iarchive ia(ds);
         ia >> d;
@@ -193,6 +197,22 @@ void Server::seven() {
     clients.clear();
 }
 
+void Server::quit(ClientData *ds) {
+    for (int i = 0; i < drivers.size(); ++i) {
+        //clients.at(i)->sendData("quit",0);
+        ClientData *cl = this->findClientById(drivers.at(i)->getId());
+        if (ds->client != cl->client){
+            cl->th->sendData("quit", cl->client);
+        }
+    }
+    delete(tc);
+    delete(m);
+    drivers.clear();
+    cabs.clear();
+    trips.clear();
+    obstacles.clear();
+    clients.clear();
+}
 void Server::nine() {
     for (int i = 0; i < trips.size(); ++i) {
         // If the trip has not been assigned.

@@ -93,6 +93,7 @@ private:
     void acceptOneClient(ClientData* data);
 
     int receiveData(char* buffer, int size, int clientDescriptor, void* d);
+    void quit(ClientData* ds);
     
     ClientData* findClientById(int id){
         for (int i = 0; i < this->clientDis.size(); i++) {
