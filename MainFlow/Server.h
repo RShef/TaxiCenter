@@ -7,19 +7,16 @@
 
 #include <iostream>
 //#include <pthread.h>
-//#include "Job.h"
 #include "../World/GridPoint.h"
 #include "../TaxiStation/TaxiCenter.h"
 #include "../World/Grid.h"
 #include "ThreadPool.h"
-
 #include "../TaxiStation/Vehicles/StandardCab.h"
 #include "../TaxiStation/Vehicles/LuxuryCab.h"
 #include "../World/Clock.h"
 #include <boost/serialization/export.hpp>
 #include "../Socketing/Socket.h"
-#include <tcl.h>
-
+//#include <tcl.h>
 
 using namespace std;
 

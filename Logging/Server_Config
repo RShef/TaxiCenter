@@ -1,6 +1,6 @@
 * ALL:
     FORMAT                  =   "%level: %log"
-    FILENAME                =   "Logging/Server.log"
+    FILENAME                =   "../Logging/Server.log"
     ENABLED                 =   true
     TO_FILE                 =   true
     TO_STANDARD_OUTPUT      =   false

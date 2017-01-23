@@ -5,10 +5,10 @@
 #ifndef PART_2_THREADPOOL_H
 #define PART_2_THREADPOOL_H
 
-
 #include "Job.h"
 #include <queue>
 #include <pthread.h>
+
 using namespace std;
 
 class ThreadPool {
@@ -18,6 +18,7 @@ class ThreadPool {
     pthread_t* threads;
     bool stop;
     pthread_mutex_t lock;
+    
  public:
     ThreadPool(int threads_num);
     void doJobs();
