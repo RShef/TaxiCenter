@@ -52,22 +52,21 @@ int main(int argc, char *argv[]) {
     int id, age, exp, cabId;
     char stat;
     char comma[4];
-
     Client* client = new Client(argv[1],atoi(argv[2]));
-    client->Connect();
 
-    // Crate a new driver by user input.
+    // Create a new driver by user input.
     cin >> id >> comma[0] >> age >> comma[1] >> stat >> comma[2] >> exp >> comma[3] >> cabId;
     int status = findStatus(stat);
-    // if input is wrong, notify server to quit program
+
     if (checkInput(id, age, status, exp, cabId, comma) == 0) {
+
+        client->Connect();
         client->sendDriver(id, age, (Driver::Status) status, exp, cabId);
 
         while (client->connected) {
             client->ListenToServer();
         }
     } else {
-        client->sendData("wrong!");
         LOG(ERROR) << "input incorrect";
     }
 

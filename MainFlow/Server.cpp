@@ -96,11 +96,6 @@ void Server::one(int numDrivers) {
     int i;
     for(i = 0; i < numDrivers; i++) {
         stringstream ds;
-        // if the input from the client is wrong.
-        if (strcmp(clientDis.at(i)->buffer,"wrong!") == 0){
-            LOG(ERROR) << "Client input incorrect. Initiating shutdown";
-            this->quit(clientDis.at(i));
-        }
         ds << clientDis.at(i)->buffer;
         boost::archive::text_iarchive ia(ds);
         ia >> d;
