@@ -50,6 +50,10 @@ class Grid : public Map {
    */
   Grid(int x, int y);
 
+    int getX();
+
+    int getY();
+
   /**
    *Prints the grid where point (0,0) is on the bottom left
    */

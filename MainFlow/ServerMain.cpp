@@ -89,6 +89,26 @@ int validateCab(int id, int type, int car, int color, char comma[]) {
     return 0;
 }
 
+/**
+* Check validity of trip input.
+* @return - 0 if input is valid, -1 otherwise.
+*/
+int validateTrip(int id, int startX, int startY, int endX, int endY, int numPass, double tariff, int startTime,
+                 char comma[], Server *server) {
+    int mapX = server->getMap()->getX();
+    int mapY = server->getMap()->getY();
+    if (id < 0 || startX < 0 || startX > mapX || startY < 0 || startY > mapY || endX < 0 || endX > mapX
+        || endY < 0 || endY > mapY || numPass < 1 || tariff <= 0 || startTime <= 0) {
+        return -1;
+    }
+    for (int i = 0; i < 7; ++i) {
+        if (comma[i] != ',') {
+            return -1;
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
 
     easyloggingpp::Configurations confFromFile("../Logging/Server_Config");
@@ -142,9 +162,18 @@ int main(int argc, char *argv[]) {
 
             case 2: // insert new trip
             {
-                cin >> input1 >> comma[0] >> input2 >> comma[1] >> input3 >> comma[2] >> input4
-                    >> comma[3] >> input5 >> comma[4] >> input6 >> comma[5] >> input10 >> comma[6] >> input7;
-                server->two(input1, input2, input3, input4, input5, input6, input10, input7);
+                while (true) {
+                    cin >> input1 >> comma[0] >> input2 >> comma[1] >> input3 >> comma[2] >> input4
+                        >> comma[3] >> input5 >> comma[4] >> input6 >> comma[5] >> input10 >> comma[6] >> input7;
+                    if (validateTrip(input1, input2, input3, input4, input5, input6, input10, input7, comma, server) == 0) {
+                        server->two(input1, input2, input3, input4, input5, input6, input10, input7);
+                        break;
+                    } else {
+                        LOG(ERROR) << "Invalid trip input. Please try again";
+                        cout << "-1" << endl;
+                        memset(comma, ',', sizeof(comma));
+                    }
+                }
                 break;
             }
 
@@ -166,10 +195,14 @@ int main(int argc, char *argv[]) {
                 break;
             }
 
-            case 4: // request driver location bt id and print it.
+            case 4: // request driver location by id and print it.
             {
-                cin >> input1;
-                server->four(input1);
+                while (true) {
+                    cin >> input1;
+                    if (server->four(input1) == 0) {
+                        break;
+                    }
+                }
                 break;
             }
 

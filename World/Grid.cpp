@@ -29,6 +29,15 @@ Grid::Grid(int x, int y) {
     }
   }
 }
+
+int Grid::getX() {
+    return this->sizeX;
+}
+
+int Grid::getY() {
+    return this->sizeY;
+}
+
 void Grid::printMap() {
 
   for (int i = sizeY - 1; i >= 0; --i) {
