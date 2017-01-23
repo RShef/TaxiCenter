@@ -9,6 +9,7 @@ class Job {
  private:
     void *arg;
     void * (*func)(void *arg);
+
  public:
     Job(void * (*func)(void *arg), void* arg);
     void execute();

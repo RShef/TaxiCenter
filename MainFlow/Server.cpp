@@ -97,7 +97,8 @@ void Server::one(int numDrivers) {
     for(i = 0; i < numDrivers; i++) {
         stringstream ds;
         // if the input from the client is wrong.
-        if (strcmp(clientDis.at(i)->buffer,"wrong!")){
+        if (strcmp(clientDis.at(i)->buffer,"wrong!") == 0){
+            LOG(ERROR) << "Client input incorrect. Initiating shutdown";
             this->quit(clientDis.at(i));
         }
         ds << clientDis.at(i)->buffer;
@@ -184,7 +185,6 @@ void Server::four(int id) {
 
 void Server::seven() {
     for (int i = 0; i < drivers.size(); ++i) {
-        //clients.at(i)->sendData("quit",0);
         ClientData *cl = this->findClientById(drivers.at(i)->getId());
         cl->th->sendData("quit", cl->client);
     }
@@ -199,7 +199,6 @@ void Server::seven() {
 
 void Server::quit(ClientData *ds) {
     for (int i = 0; i < drivers.size(); ++i) {
-        //clients.at(i)->sendData("quit",0);
         ClientData *cl = this->findClientById(drivers.at(i)->getId());
         if (ds->client != cl->client){
             cl->th->sendData("quit", cl->client);
@@ -212,7 +211,9 @@ void Server::quit(ClientData *ds) {
     trips.clear();
     obstacles.clear();
     clients.clear();
+    exit(1);
 }
+
 void Server::nine() {
     for (int i = 0; i < trips.size(); ++i) {
         // If the trip has not been assigned.
