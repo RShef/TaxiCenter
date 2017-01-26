@@ -61,6 +61,10 @@ Server::Server(int po) {
     }
 }
 
+Grid* Server::getMap() {
+    return this->m;
+}
+
 void Server::setUp(int x, int y, vector <GridPoint*> obstacles){
     this->m = new Grid(x, y);
     LOG(INFO) << "Grid of " << x  << "X" << y << " created";
@@ -174,8 +178,16 @@ void Server::three(int id, int type, int car, int color) {
     }
 }
 
-void Server::four(int id) {
-    tc->printDriverLocById(id);
+int Server::four(int id) {
+    for (int i = 0; i < drivers.size(); ++i) {
+        if (id == drivers.at(i)->getId()) {
+            tc->printDriverLocById(id);
+            return 0;
+        }
+    }
+    LOG(ERROR) << "Driver does not exist. Please try again";
+    cout << "-1" << endl;
+    return -1;
 }
 
 void Server::seven() {

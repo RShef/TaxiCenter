@@ -52,12 +52,12 @@ private:
     vector<char*> *buff1;
     pthread_t thread[10000];
 
-
-
  public:
     Server();
 
     Server(int po);
+
+    Grid* getMap();
     
     void PreWork();
 
@@ -67,7 +67,7 @@ private:
 
     void three(int id, int type, int car, int color);
 
-    void four(int id);
+    int four(int id);
 
     void seven();
 
