@@ -179,14 +179,15 @@ void Server::three(int id, int type, int car, int color) {
 }
 
 int Server::four(int id) {
-    if (id < 0 || id >= drivers.size()) {
-        LOG(ERROR) << "Driver does not exist. Please try again";
-        cout << "-1" << endl;
-        return -1;
-    } else {
-        tc->printDriverLocById(id);
-        return 0;
+    for (int i = 0; i < drivers.size(); ++i) {
+        if (id == drivers.at(i)->getId()) {
+            tc->printDriverLocById(id);
+            return 0;
+        }
     }
+    LOG(ERROR) << "Driver does not exist. Please try again";
+    cout << "-1" << endl;
+    return -1;
 }
 
 void Server::seven() {
