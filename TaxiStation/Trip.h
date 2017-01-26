@@ -56,6 +56,7 @@ class Trip {
 
 public:
     Map *map;
+    bool wrong;
     /**
      * Constructor.
      * @param id - trip id number.

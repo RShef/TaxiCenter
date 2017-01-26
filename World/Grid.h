@@ -39,9 +39,12 @@ class Grid : public Map {
    * the map.
    */
   vector<vector<GridPoint *> > map;
+    vector <GridPoint*> obstacles;
 
     Grid();
   // Creates a 2D grid of points of given size
+    void setOb(vector <GridPoint*> ob);
+    bool checkOb(GridPoint* gb);
   /**
    * Constructor.
    * @param x - sizeX.

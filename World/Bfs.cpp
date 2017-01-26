@@ -12,7 +12,7 @@ Bfs::Bfs(Map *map) {
   (*m).initializeGridPoints();
 }
 
-void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
+bool Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
   // Create a queue for BFS
     GridPoint *str = s->copy();
   list<GridPoint *> queue;
@@ -75,26 +75,31 @@ void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
 
     // Get the neighbors!!
     rouets->at(e) = ((*m).getNeighbors(*s));
+    if (!rouets->at(e)->empty()) {
+        // For each neighbor, mark as visited and add to queue.
+        for (int i = 0; i < (*(rouets->at(e))).size(); ++i) {
+            // If not visited, visit.
+            if (!((*((*(rouets->at(e))).at(i))).getState())) {
+                ((*(rouets->at(e))).at(i))->changeState();
+                ((*(rouets->at(e))).at(i))->assignFather(((*(rouets->at(t))).at(b)));
+                queue.push_back(((*(rouets->at(e))).at(i)));
+            }
 
-    // For each neighbor, mark as visited and add to queue.
-    for (int i = 0; i < (*(rouets->at(e))).size(); ++i) {
-      // If not visited, visit.
-      if (!((*((*(rouets->at(e))).at(i))).getState())) {
-        ((*(rouets->at(e))).at(i))->changeState();
-        ((*(rouets->at(e))).at(i))->assignFather(((*(rouets->at(t))).at(b)));
-        queue.push_back(((*(rouets->at(e))).at(i)));
-      }
-
-      // Checking to see if the neighbor is the target.
-      if ((*f).isEqual(*((*(rouets->at(e))).at(i)))) {
-        *f = *((*(rouets->at(e))).at(i));
-        a = 1;
-        break;
-      }
+            // Checking to see if the neighbor is the target.
+            if ((*f).isEqual(*((*(rouets->at(e))).at(i)))) {
+                *f = *((*(rouets->at(e))).at(i));
+                a = 1;
+                break;
+            }
+        }
     }
     ++e;
     if (a == 1) { break; }
   }
+
+    if (a != 1) {
+        return false;
+    }
 
 // Going back to find to route of ancestry.
   vector<GridPoint *> fat = *new vector<GridPoint *>;
@@ -127,6 +132,6 @@ void Bfs::findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp) {
       }
     }
   }
-  return;
+  return true;
 
 };

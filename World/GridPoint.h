@@ -83,6 +83,9 @@ class GridPoint : public Point {
      * @return a copy of the grid point.
      */
     GridPoint * copy();
+    bool operator==(const GridPoint& gb) {
+        return this->isEqual(gb);
+    }
 
 };
 

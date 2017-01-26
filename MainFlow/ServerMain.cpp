@@ -140,11 +140,11 @@ int main(int argc, char *argv[]) {
     int input1;
     string input;
     vector<int> vec;
-    vector <GridPoint*> obstacles;
+    vector<GridPoint *> obstacles;
 
-    Server* server = new Server(atoi(argv[1]));
+    Server *server = new Server(atoi(argv[1]));
 
-    while(true) {
+    while (true) {
         // construct the grid (our WORLD).
         getline(cin, input);
         vec = parse(input, ' ', 0);
@@ -187,9 +187,16 @@ int main(int argc, char *argv[]) {
 
     // run tasks loop
     cin >> task;
+
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     while (true) {
-
+        if (!server->trips.empty()) {
+            for (int i = 0; i < server->trips.size(); i++) {
+                if (server->trips[i]->wrong) {
+                    server->trips.erase(server->trips.begin() + i);
+                }
+            }
+        }
         switch (task) {
 
             case 1: //receive drivers from clients
@@ -249,7 +256,6 @@ int main(int argc, char *argv[]) {
                 server->nine();
                 break;
             }
-
 
             default: {
                 LOG(ERROR) << "Invalid task number. please try again.";

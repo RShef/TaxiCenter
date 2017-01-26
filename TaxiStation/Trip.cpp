@@ -16,6 +16,7 @@ Trip::Trip(int id, GridPoint* start, GridPoint* end, int numPass, double tariff,
     this->assigned = false;
     this->startTime = startTime;
     this->cal = false;
+    this->wrong = false;
 }
 
 Trip::Trip() {}
@@ -74,6 +75,9 @@ vector<GridPoint *>* Trip::getRoute() {
 void Trip::prossRoute() {
     Bfs b(this->map);
     vector<GridPoint*>* vec = new vector<GridPoint*>;
-    b.findShortRoute(this->getStart(), this->getEnd(), vec);
+    if(!b.findShortRoute(this->getStart(), this->getEnd(), vec)){
+        this->route = NULL;
+        this->wrong = true;
+    }
     this->route = vec;
 }

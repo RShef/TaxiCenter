@@ -71,6 +71,7 @@ void Server::setUp(int x, int y, vector <GridPoint*> obstacles){
     this->tc = new TaxiCenter();
     this->buff1 = new vector<char *>;
     this->obstacles = obstacles;
+    this->m->obstacles = this->obstacles;
     LOG(INFO) << obstacles.size() << " obstacles created";
 }
 

@@ -32,7 +32,7 @@ class Bfs {
      * @param f - End point.
      * @param gp - the final route will be here.
      */
-  void findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp);
+  bool findShortRoute(GridPoint *s, GridPoint *f, vector<GridPoint*> *gp);
 };
 
 #endif //PART_2_BFS_H

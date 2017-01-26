@@ -10,6 +10,9 @@ using namespace std;
 Grid::Grid() {}
 
 Grid::Grid(int x, int y) {
+    vector <GridPoint*> a;
+    this->obstacles =  a;
+    this->obstacles.clear();
 
   sizeX = x;
   sizeY = y;
@@ -56,19 +59,19 @@ vector<GridPoint *> *Grid::getNeighbors(GridPoint p) {
     vector<GridPoint *> *vec = new vector<GridPoint *>;
 
     // Order of the clock - Right.
-    if (p.x > 0) {
+    if ((p.x > 0 )  && !checkOb(map[p.x - 1][p.y])){
     (*vec).push_back(map[p.x - 1][p.y]);
     }
     // Up.
-    if (p.y < sizeY - 1) {
+    if ((p.y < sizeY - 1) && !checkOb(map[p.x][p.y + 1])) {
     (*vec).push_back(map[p.x][p.y + 1]);
     }
     // Right.
-    if (p.x < sizeX - 1) {
+    if ((p.x < sizeX - 1)  && !checkOb(map[p.x + 1][p.y])){
         (*vec).push_back(map[p.x + 1][p.y]);
     }
     // Down.
-    if (p.y > 0) {
+    if ((p.y > 0) && !checkOb(map[p.x][p.y - 1])) {
         (*vec).push_back(map[p.x][p.y - 1]);
     }
 
@@ -88,7 +91,27 @@ void Grid::initializeGridPoints() {
 
 // Copies the grid.
 Map *Grid::copy() {
-  return new Grid(this->sizeX, this->sizeY);
+    Grid*a = new Grid(this->sizeX, this->sizeY);
+    a->obstacles = this->obstacles;
+  return a;
 }
 // De-constructor.
 Grid::~Grid() {}
+
+void Grid::setOb(vector<GridPoint *> ob) {
+    this->obstacles = ob;
+
+}
+
+bool Grid::checkOb(GridPoint *gb) {
+    if (!this->obstacles.empty()){
+        vector<GridPoint> ob;
+        for(int i =0; i < this->obstacles.size(); i++) {
+            ob.push_back(*(this->obstacles[i]));
+        }
+        return find(ob.begin(), ob.end(), *gb) != ob.end();
+    } else {
+        return false;
+    }
+
+}

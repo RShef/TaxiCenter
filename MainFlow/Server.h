@@ -42,7 +42,6 @@ private:
     bool online;
     vector <Driver*> drivers;
     vector <Cab*> cabs;
-    vector <Trip*> trips;
     vector <Socket*> clients;
     vector <GridPoint*> obstacles;
     TaxiCenter *tc;
@@ -54,6 +53,7 @@ private:
 
  public:
     Server();
+    vector <Trip*> trips;
 
     Server(int po);
 
@@ -99,6 +99,7 @@ private:
             }
         }
     };
+
 };
 
 #endif //PART_2_SERVER_H
