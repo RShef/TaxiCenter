@@ -39,6 +39,7 @@ class Socket {
 	int backLog;
 	//port number
 	int port_number;
+
 public:
 	string ip_address = IP;
 	bool on;
@@ -64,7 +65,7 @@ public:
 	* The Function operation: initialize the Socket object and getting a   *
 	* socket descriptor. pure virtual method							   *
 	***********************************************************************/
-	virtual int initialize() = 0;
+	virtual int initialize(){};
 	/***********************************************************************
 	* function name: sendData											   *
 	* The Input: string representing the data to send		               *
@@ -72,7 +73,7 @@ public:
 	* The Function operation: sending the input data to the socket         *
 	* who connect to this socket. pure virtual method					   *
 	***********************************************************************/
-	virtual int sendData(string data, int a) = 0;
+	virtual int sendData(string data, int a){};
 	/***********************************************************************
 	* function name: receiveData 										   *
 	* The Input: none										               *
@@ -80,7 +81,8 @@ public:
 	* The Function operation: getting data from the other socket and print *
 	* the data															   *
 	***********************************************************************/
-	 virtual int receiveData(char* buffer, int size, int clientDescriptor, void* d) =0;
+	friend class Server;
+	 virtual int receiveData(){};
 
 
 };

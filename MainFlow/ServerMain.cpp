@@ -5,7 +5,7 @@
 #define _ELPP_THREAD_SAFE
 
 #include <iostream>
-#include "Server.h"
+#include "TaxiWorld.h"
 #include "../Logging/easylogging++.h"
 
 _INITIALIZE_EASYLOGGINGPP
@@ -143,6 +143,7 @@ int main(int argc, char *argv[]) {
     vector<GridPoint *> obstacles;
 
     Server *server = new Server(atoi(argv[1]));
+    TaxiWorld* taxiWorld = new TaxiWorld(server);
 
     while (true) {
         // construct the grid (our WORLD).
@@ -174,7 +175,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (validateObstacles(gridX, gridY, obstacles) == 0) {
-            server->setUp(gridX, gridY, obstacles);
+            taxiWorld->setUp(gridX, gridY, obstacles);
             vec.clear();
             break;
         } else {
@@ -191,10 +192,10 @@ int main(int argc, char *argv[]) {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     while (true) {
         // for the bfs check of the route.
-        if (!server->trips.empty()) {
-            for (int i = 0; i < server->trips.size(); i++) {
-                if (server->trips[i]->wrong) {
-                    server->trips.erase(server->trips.begin() + i);
+        if (!taxiWorld->trips.empty()) {
+            for (int i = 0; i < taxiWorld->trips.size(); i++) {
+                if (taxiWorld->trips[i]->wrong) {
+                    taxiWorld->trips.erase(taxiWorld->trips.begin() + i);
                 }
             }
         }
@@ -203,7 +204,7 @@ int main(int argc, char *argv[]) {
             case 1: //receive drivers from clients
             {
                 cin >> input1;
-                server->one(input1);
+                taxiWorld->getDriversFromClients(input1);
                 break;
             }
 
@@ -212,8 +213,8 @@ int main(int argc, char *argv[]) {
                 // get input line, delimited by ',' and parse into vector
                 getline(cin, input);
                 vec = parse(input, ',', 0);
-                if (validateTrip(vec, server->getMap()->getX(), server->getMap()->getY(), obstacles) == 0) {
-                    server->two(vec.at(0), vec.at(1), vec.at(2), vec.at(3), vec.at(4), vec.at(5), vec.at(6), vec.at(7));
+                if (validateTrip(vec, taxiWorld->getMap()->getX(), taxiWorld->getMap()->getY(), obstacles) == 0) {
+                    taxiWorld->addTrip(vec.at(0), vec.at(1), vec.at(2), vec.at(3), vec.at(4), vec.at(5), vec.at(6), vec.at(7));
                 } else {
                     LOG(ERROR) << "Invalid trip input. Please try again";
                     cout << "-1" << endl;
@@ -229,7 +230,7 @@ int main(int argc, char *argv[]) {
                 int car = findCar((char) vec.at(2));
                 int color = findColor((char) vec.at(3));
                 if (validateCab(vec) == 0) {
-                    server->three(vec.at(0), vec.at(1), car, color);
+                    taxiWorld->addCab(vec.at(0), vec.at(1), car, color);
                 } else {
                     LOG(ERROR) << "Invalid cab input. Please try again";
                     cout << "-1" << endl;
@@ -241,20 +242,20 @@ int main(int argc, char *argv[]) {
             case 4: // request driver location by id and print it.
             {
                 cin >> input1;
-                server->four(input1);
+                taxiWorld->printDriver(input1);
                 break;
             }
 
             case 7: // clean up and exit
             {
-                server->seven();
+                taxiWorld->close();
                 LOG(INFO) << "Server exiting... Goodbye";
                 return 0;
             }
 
             case 9: // send trips and move one step
             {
-                server->nine();
+                taxiWorld->moveOnce();
                 break;
             }
 

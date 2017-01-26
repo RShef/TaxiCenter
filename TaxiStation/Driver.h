@@ -112,6 +112,7 @@ private:
         ar & this->avgSat;
         ar & this->currentLoc;
         ar & this->cabId;
+        ar &this->route;
 
     }
 };
