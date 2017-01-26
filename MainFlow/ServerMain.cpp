@@ -190,6 +190,7 @@ int main(int argc, char *argv[]) {
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     while (true) {
+        // for the bfs check of the route.
         if (!server->trips.empty()) {
             for (int i = 0; i < server->trips.size(); i++) {
                 if (server->trips[i]->wrong) {
