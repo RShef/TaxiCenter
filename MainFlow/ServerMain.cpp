@@ -88,7 +88,7 @@ int validateObstacles(int x, int y, vector <GridPoint*> obstacles) {
     for (int i = 0; i < obstacles.size(); ++i) {
         int obsX = obstacles.at(i)->x;
         int obsY = obstacles.at(i)->y;
-        if (obsX <= 0 || obsX >= x || obsY <= 0 || obsY >= y) {
+        if (obsX < 0 || obsX >= x || obsY < 0 || obsY >= y) {
             return -1;
         }
     }
