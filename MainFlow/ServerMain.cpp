@@ -88,7 +88,7 @@ int validateObstacles(int x, int y, vector <GridPoint*> obstacles) {
     for (int i = 0; i < obstacles.size(); ++i) {
         int obsX = obstacles.at(i)->x;
         int obsY = obstacles.at(i)->y;
-        if (obsX <= 0 || obsX >= x || obsY <= 0 || obsY >= y) {
+        if (obsX < 0 || obsX >= x || obsY < 0 || obsY >= y) {
             return -1;
         }
     }
@@ -127,7 +127,7 @@ int validateTrip(vector<int> vec, int mapX, int mapY, vector<GridPoint*> obs) {
 
 int main(int argc, char *argv[]) {
 
-    easyloggingpp::Configurations confFromFile("../Logging/Server_Config");
+    easyloggingpp::Configurations confFromFile("Logging/Server_Config");
     easyloggingpp::Loggers::reconfigureAllLoggers(confFromFile);
     LOG(INFO) << "Server starting";
 

@@ -5,6 +5,7 @@
 #include "TaxiWorld.h"
 TaxiWorld::TaxiWorld(Server *s) : server(s) {
 
+
 }
 void TaxiWorld::setUp(int x, int y, vector<GridPoint *> obstacles) {
     this->worldMap = new Grid(x, y);
@@ -13,6 +14,9 @@ void TaxiWorld::setUp(int x, int y, vector<GridPoint *> obstacles) {
     this->buff1 = new vector<char *>;
     this->obstacles = obstacles;
     this->worldMap->obstacles = this->obstacles;
+    this->jobs =  new vector<Job*>;
+    this->tp = new ThreadPool(5);
+    this->clock = new Clock();
     LOG(INFO) << obstacles.size() << " obstacles created";
 }
 void TaxiWorld::getDriversFromClients(int dr) {

@@ -36,6 +36,7 @@ void ThreadPool::addJob(Job *job) {
 ThreadPool::ThreadPool(int threads_num) : threads_num(threads_num), stop(false) {
     // TODO Auto-generated constructor stub
     threads = new pthread_t[threads_num];
+    jobs_queue = *new queue<Job *>;
 
     pthread_mutex_init(&lock, NULL);
     for (int i = 0; i < threads_num; i++) {
